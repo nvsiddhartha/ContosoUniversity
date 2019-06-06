@@ -1,116 +1,122 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
-using System.Data.Entity.Infrastructure;
-using System.Diagnostics;
 
 namespace ContosoUniversity.Controllers
 {
-    public class StudentController : Controller
+    public class DepartmentsController : Controller
     {
         private SchoolContext db = new SchoolContext();
 
-        // GET: Student
+        // GET: Departments
         public ActionResult Index()
         {
-            Trace.Write("StudentController");
-            return View(db.Students.ToList());
+            var departments = db.Departments.Include(d => d.Administrator);
+            return View(departments.ToList());
         }
 
-        // GET: Student/Details/5
+        // GET: Departments/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Department department = db.Departments.Find(id);
+            if (department == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(department);
         }
 
-        // GET: Student/Create
+        // GET: Departments/Create
         public ActionResult Create()
         {
+            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName");
             return View();
         }
 
-        // POST: Student/Create
+        // POST: Departments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public ActionResult Create([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
         {
             if (ModelState.IsValid)
             {
-                db.Students.Add(student);
+                db.Departments.Add(department);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(student);
+            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", department.InstructorID);
+            return View(department);
         }
 
-        // GET: Student/Edit/5
+        // GET: Departments/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Department department = db.Departments.Find(id);
+            if (department == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", department.InstructorID);
+            return View(department);
         }
 
-        // POST: Student/Edit/5
+        // POST: Departments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public ActionResult Edit([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(student).State = EntityState.Modified;
+                db.Entry(department).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(student);
+            ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "LastName", department.InstructorID);
+            return View(department);
         }
 
-        // GET: Student/Delete/5
+        // GET: Departments/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Department department = db.Departments.Find(id);
+            if (department == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(department);
         }
 
-        // POST: Student/Delete/5
+        // POST: Departments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Student student = db.Students.Find(id);
-            db.Students.Remove(student);
+            Department department = db.Departments.Find(id);
+            db.Departments.Remove(department);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
