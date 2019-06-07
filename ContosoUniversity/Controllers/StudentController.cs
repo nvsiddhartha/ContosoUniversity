@@ -16,7 +16,7 @@ namespace ContosoUniversity.Controllers
         // GET: Student
         public ActionResult Index()
         {
-            Trace.Write("StudentController");
+            Trace.TraceInformation("StudentController");
             return View(db.Students.ToList());
         }
 
